@@ -1,0 +1,33 @@
+# Explicit isolated development profile; never contains credentials.
+# Activate with SPRING_PROFILES_ACTIVE=local. Credentials are supplied by the
+# local bootstrap outside the repository; the production database is not used.
+server:
+  address: 127.0.0.1
+  port: ${LOCAL_HTTP_PORT:18080}
+ruoyi:
+  profile: ${LOCAL_UPLOAD_PATH:./var/local/uploads}
+spring:
+  datasource:
+    druid:
+      master:
+        url: ${LOCAL_DB_URL:jdbc:mysql://127.0.0.1:13306/warehouse_local?useUnicode=true&characterEncoding=utf8&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&useSSL=false&allowPublicKeyRetrieval=true}
+        username: ${LOCAL_DB_USERNAME}
+        password: ${LOCAL_DB_PASSWORD}
+      initialSize: 1
+      minIdle: 1
+      maxActive: 5
+      statViewServlet:
+        enabled: false
+  data:
+    redis:
+      host: ${LOCAL_REDIS_HOST:127.0.0.1}
+      port: ${LOCAL_REDIS_PORT:16379}
+      database: ${LOCAL_REDIS_DATABASE:0}
+      password: ${LOCAL_REDIS_PASSWORD:}
+token:
+  secret: ${LOCAL_TOKEN_SECRET}
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

@@ -1,0 +1,85 @@
+-- Stop writers and verify a backup. This migration never contacts a provider.
+CREATE TABLE wh_integration_connection (
+ id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ provider VARCHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ name VARCHAR(191) NOT NULL,
+ site_url VARCHAR(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ source_key CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL UNIQUE,
+ client_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ warehouse_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ channel_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ revision BIGINT NOT NULL DEFAULT 1,
+ enabled BOOLEAN NOT NULL DEFAULT FALSE,
+ credentials_cipher LONGTEXT NULL,
+ cursor_json LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+ active_job VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ last_request_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ last_input_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ created_by BIGINT NOT NULL,
+ updated_by BIGINT NOT NULL,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ CONSTRAINT fk_integration_client FOREIGN KEY(client_id) REFERENCES wh_record(id),
+ CONSTRAINT fk_integration_warehouse FOREIGN KEY(warehouse_id) REFERENCES wh_record(id),
+ CONSTRAINT fk_integration_channel FOREIGN KEY(channel_id) REFERENCES wh_record(id),
+ CONSTRAINT ck_integration_connection_state CHECK(revision>0 AND enabled IN (0,1) AND provider='woocommerce'),
+ CONSTRAINT ck_integration_connection_cursor_json CHECK(JSON_VALID(cursor_json)),
+ KEY ix_integration_scope(client_id,warehouse_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+CREATE TABLE wh_integration_job (
+ id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ connection_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ actor_id BIGINT NOT NULL,
+ request_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ input_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ input_json LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+ connection_revision BIGINT NOT NULL,
+ state VARCHAR(16) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ window_json LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+ result_json LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+ error_code VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ finished_at DATETIME(6) NULL,
+ CONSTRAINT fk_integration_job_connection FOREIGN KEY(connection_id) REFERENCES wh_integration_connection(id),
+ CONSTRAINT ck_integration_job_state CHECK(state IN('RUNNING','SUCCEEDED','FAILED')),
+ CONSTRAINT ck_integration_job_window_json CHECK(JSON_VALID(window_json)),
+ CONSTRAINT ck_integration_job_input_json CHECK(JSON_VALID(input_json)),
+ CONSTRAINT ck_integration_job_result_json CHECK(JSON_VALID(result_json)),
+ UNIQUE KEY uk_integration_request(actor_id,request_id),
+ KEY ix_integration_job_connection(connection_id,created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+CREATE TABLE wh_integration_inbox (
+ id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ connection_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ external_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ reference VARCHAR(191) NOT NULL,
+ revision BIGINT NOT NULL DEFAULT 1,
+ state VARCHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ source_updated_at DATETIME(6) NOT NULL,
+ document_json LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+ document_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ last_job VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ CONSTRAINT fk_integration_inbox_connection FOREIGN KEY(connection_id) REFERENCES wh_integration_connection(id),
+ CONSTRAINT fk_integration_inbox_job FOREIGN KEY(last_job) REFERENCES wh_integration_job(id),
+ CONSTRAINT ck_integration_inbox_state CHECK(revision>0 AND state IN('AWAITING_REVIEW','HELD','CANCELLED','FULFILLED')),
+ CONSTRAINT ck_integration_inbox_document_json CHECK(JSON_VALID(document_json)),
+ UNIQUE KEY uk_integration_order(connection_id,external_id),
+ KEY ix_integration_inbox_state(connection_id,state,updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+CREATE TABLE wh_integration_event (
+ id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ inbox_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ revision BIGINT NOT NULL,
+ job_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ document_json LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ CONSTRAINT fk_integration_event_inbox FOREIGN KEY(inbox_id) REFERENCES wh_integration_inbox(id),
+ CONSTRAINT fk_integration_event_job FOREIGN KEY(job_id) REFERENCES wh_integration_job(id),
+ CONSTRAINT ck_integration_event_document_json CHECK(JSON_VALID(document_json)),
+ UNIQUE KEY uk_integration_event(inbox_id,revision)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;

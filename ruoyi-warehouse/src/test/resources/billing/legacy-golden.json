@@ -1,0 +1,7581 @@
+{
+  "source": "services/billing.mjs",
+  "sha256": "df61f3fa543cc29313e1720fd75a1d5ce08aee01252a5b5686ed96309623dcd9",
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "decimal-null",
+      "method": "decimal",
+      "input": {
+        "value": null
+      },
+      "expected": "0"
+    },
+    {
+      "id": "decimal-empty",
+      "method": "decimal",
+      "input": {
+        "value": ""
+      },
+      "expected": "0"
+    },
+    {
+      "id": "decimal-whole",
+      "method": "decimal",
+      "input": {
+        "value": 12
+      },
+      "expected": "12000000000"
+    },
+    {
+      "id": "decimal-nine",
+      "method": "decimal",
+      "input": {
+        "value": "1.1234567899"
+      },
+      "expected": "1123456789"
+    },
+    {
+      "id": "decimal-negative",
+      "method": "decimal",
+      "input": {
+        "value": "-1.1234567899"
+      },
+      "expected": "-1123456789"
+    },
+    {
+      "id": "decimal-scientific",
+      "method": "decimal",
+      "input": {
+        "value": "1e-8"
+      },
+      "expected": "10"
+    },
+    {
+      "id": "decimal-scientific-negative",
+      "method": "decimal",
+      "input": {
+        "value": "-1e-8"
+      },
+      "expected": "-10"
+    },
+    {
+      "id": "decimal-scientific-midpoint",
+      "method": "decimal",
+      "input": {
+        "value": "1.2345678905e0"
+      },
+      "expected": "1234567890"
+    },
+    {
+      "id": "decimal-scientific-nano-midpoint",
+      "method": "decimal",
+      "input": {
+        "value": "15e-10"
+      },
+      "expected": "1"
+    },
+    {
+      "id": "decimal-scientific-half-nano",
+      "method": "decimal",
+      "input": {
+        "value": "5e-10"
+      },
+      "expected": "1"
+    },
+    {
+      "id": "decimal-scientific-too-large",
+      "method": "decimal",
+      "input": {
+        "value": "1e21"
+      },
+      "error": "Invalid decimal amount: 1e+21"
+    },
+    {
+      "id": "decimal-plain-small-number",
+      "method": "decimal",
+      "input": {
+        "value": 0.000012345678905
+      },
+      "expected": "12345"
+    },
+    {
+      "id": "decimal-scientific-small-number",
+      "method": "decimal",
+      "input": {
+        "value": 1.5e-9
+      },
+      "expected": "1"
+    },
+    {
+      "id": "decimal-bad",
+      "method": "decimal",
+      "input": {
+        "value": "1,000"
+      },
+      "error": "Invalid decimal amount: 1,000"
+    },
+    {
+      "id": "round-3.125",
+      "method": "moneyRound",
+      "input": {
+        "raw": "3125000000"
+      },
+      "expected": 3.12
+    },
+    {
+      "id": "round-3.135",
+      "method": "moneyRound",
+      "input": {
+        "raw": "3135000000"
+      },
+      "expected": 3.14
+    },
+    {
+      "id": "round--3.125",
+      "method": "moneyRound",
+      "input": {
+        "raw": "-3125000000"
+      },
+      "expected": -3.12
+    },
+    {
+      "id": "round--3.135",
+      "method": "moneyRound",
+      "input": {
+        "raw": "-3135000000"
+      },
+      "expected": -3.14
+    },
+    {
+      "id": "round-0.005",
+      "method": "moneyRound",
+      "input": {
+        "raw": "5000000"
+      },
+      "expected": 0
+    },
+    {
+      "id": "round-0.015",
+      "method": "moneyRound",
+      "input": {
+        "raw": "15000000"
+      },
+      "expected": 0.02
+    },
+    {
+      "id": "round--0.005",
+      "method": "moneyRound",
+      "input": {
+        "raw": "-5000000"
+      },
+      "expected": 0
+    },
+    {
+      "id": "round--0.015",
+      "method": "moneyRound",
+      "input": {
+        "raw": "-15000000"
+      },
+      "expected": -0.02
+    },
+    {
+      "id": "round-0.004999999",
+      "method": "moneyRound",
+      "input": {
+        "raw": "4999999"
+      },
+      "expected": 0
+    },
+    {
+      "id": "round-0.005000001",
+      "method": "moneyRound",
+      "input": {
+        "raw": "5000001"
+      },
+      "expected": 0.01
+    },
+    {
+      "id": "volume-dimensions",
+      "method": "productVolume",
+      "input": {
+        "product": {
+          "id": "a",
+          "client": "c",
+          "sku": "A",
+          "height": 100,
+          "length": 100,
+          "depth": 100,
+          "price": 20
+        },
+        "carton": false
+      },
+      "expected": 1
+    },
+    {
+      "id": "volume-explicit",
+      "method": "productVolume",
+      "input": {
+        "product": {
+          "id": "b",
+          "client": "c",
+          "sku": "B",
+          "volume": 0.25,
+          "price": 10
+        },
+        "carton": false
+      },
+      "expected": 0.25
+    },
+    {
+      "id": "volume-carton",
+      "method": "productVolume",
+      "input": {
+        "product": {
+          "sku": "A",
+          "volume": 9,
+          "cartonHeight": 30,
+          "cartonLength": 40,
+          "cartonDepth": 50
+        },
+        "carton": true
+      },
+      "expected": 0.06
+    },
+    {
+      "id": "volume-missing",
+      "method": "productVolume",
+      "input": {
+        "product": {
+          "sku": "A"
+        },
+        "carton": false
+      },
+      "error": "Dimensions are required for A"
+    },
+    {
+      "id": "volume-precision",
+      "method": "productVolume",
+      "input": {
+        "product": {
+          "sku": "A",
+          "height": 0.123456789,
+          "length": 200.123456789,
+          "depth": 50.123456789
+        },
+        "carton": false
+      },
+      "expected": 0.00123838
+    },
+    {
+      "id": "tier-0-false",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 0,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": false,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0
+      }
+    },
+    {
+      "id": "tier-0-true",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 0,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": true,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0
+      }
+    },
+    {
+      "id": "tier-1-false",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 1,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": false,
+        "minimum": 2
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1 and above",
+            "quantity": 1,
+            "rate": 0.05,
+            "amount": 0.05,
+            "raw": "50000000",
+            "source": "tier"
+          },
+          {
+            "description": "Minimum charge adjustment",
+            "quantity": 1,
+            "rate": 1.95,
+            "amount": 1.95,
+            "raw": "1950000000",
+            "source": "minimum"
+          }
+        ],
+        "amount": 2
+      }
+    },
+    {
+      "id": "tier-1-true",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 1,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": true,
+        "minimum": 2
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1–100",
+            "quantity": 1,
+            "rate": 0.05,
+            "amount": 0.05,
+            "raw": "50000000",
+            "source": "tier"
+          },
+          {
+            "description": "Minimum charge adjustment",
+            "quantity": 1,
+            "rate": 1.95,
+            "amount": 1.95,
+            "raw": "1950000000",
+            "source": "minimum"
+          }
+        ],
+        "amount": 2
+      }
+    },
+    {
+      "id": "tier-100-false",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 100,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": false,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1 and above",
+            "quantity": 100,
+            "rate": 0.05,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 5
+      }
+    },
+    {
+      "id": "tier-100-true",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 100,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": true,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1–100",
+            "quantity": 100,
+            "rate": 0.05,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 5
+      }
+    },
+    {
+      "id": "tier-101-false",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 101,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": false,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 101 and above",
+            "quantity": 101,
+            "rate": 0.1,
+            "amount": 10.1,
+            "raw": "10100000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 10.1
+      }
+    },
+    {
+      "id": "tier-101-true",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 101,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": true,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1–100",
+            "quantity": 100,
+            "rate": 0.05,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          },
+          {
+            "description": "Tier 101–∞",
+            "quantity": 1,
+            "rate": 0.1,
+            "amount": 0.1,
+            "raw": "100000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 5.1
+      }
+    },
+    {
+      "id": "tier-150-false",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 150,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": false,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 101 and above",
+            "quantity": 150,
+            "rate": 0.1,
+            "amount": 15,
+            "raw": "15000000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 15
+      }
+    },
+    {
+      "id": "tier-150-true",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 150,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ],
+        "split": true,
+        "minimum": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1–100",
+            "quantity": 100,
+            "rate": 0.05,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          },
+          {
+            "description": "Tier 101–∞",
+            "quantity": 50,
+            "rate": 0.1,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 10
+      }
+    },
+    {
+      "id": "tier-sort",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 150,
+        "tiers": [
+          {
+            "from": 101,
+            "rate": 0.1
+          },
+          {
+            "from": 1,
+            "rate": 0.05
+          }
+        ],
+        "split": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1–100",
+            "quantity": 100,
+            "rate": 0.05,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          },
+          {
+            "description": "Tier 101–∞",
+            "quantity": 50,
+            "rate": 0.1,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "tier"
+          }
+        ],
+        "amount": 10
+      }
+    },
+    {
+      "id": "tier-credit",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 2,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": -1
+          }
+        ],
+        "minimum": -5
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1 and above",
+            "quantity": 2,
+            "rate": -1,
+            "amount": -2,
+            "raw": "-2000000000",
+            "source": "tier"
+          }
+        ],
+        "amount": -2
+      }
+    },
+    {
+      "id": "tier-missing-first",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 2,
+        "tiers": [
+          {
+            "from": 2,
+            "rate": 1
+          }
+        ]
+      },
+      "error": "First tier must start at 1"
+    },
+    {
+      "id": "tier-negative",
+      "method": "tierTotal",
+      "input": {
+        "quantity": -1,
+        "tiers": [
+          {
+            "from": 1,
+            "rate": 0.05
+          },
+          {
+            "from": 101,
+            "rate": 0.1
+          }
+        ]
+      },
+      "error": "Tier quantity must be a non-negative integer"
+    },
+    {
+      "id": "tier-no-tiers",
+      "method": "tierTotal",
+      "input": {
+        "quantity": 0,
+        "tiers": []
+      },
+      "error": "First tier must start at 1"
+    },
+    {
+      "id": "picking-PerItem",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PerItem",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-PerOrderLine",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PerOrderLine",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 1,
+            "rate": 0.5,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 2.5,
+        "calculation": "PerOrderLine",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-PerOrderPerSkuType",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PerOrderPerSkuType",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Order pick",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          },
+          {
+            "description": "Per unit",
+            "quantity": 5,
+            "rate": 0.5,
+            "amount": 2.5,
+            "raw": "2500000000",
+            "source": "client"
+          },
+          {
+            "description": "Per SKU",
+            "quantity": 2,
+            "rate": 1,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 6.5,
+        "calculation": "PerOrderPerSkuType",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-PerOrderPerSkuPerType",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PerOrderPerSkuPerType",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Order pick",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          },
+          {
+            "description": "Per unit",
+            "quantity": 5,
+            "rate": 0.5,
+            "amount": 2.5,
+            "raw": "2500000000",
+            "source": "client"
+          },
+          {
+            "description": "Per SKU",
+            "quantity": 2,
+            "rate": 1,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 6.5,
+        "calculation": "PerOrderPerSkuPerType",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-PerOrderPerSkuPerUnit",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PerOrderPerSkuPerUnit",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Order pick",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          },
+          {
+            "description": "Per unit",
+            "quantity": 5,
+            "rate": 0.5,
+            "amount": 2.5,
+            "raw": "2500000000",
+            "source": "client"
+          },
+          {
+            "description": "Per SKU",
+            "quantity": 2,
+            "rate": 1,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 6.5,
+        "calculation": "PerOrderPerSkuPerUnit",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-PercentageOfOrderValue",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PercentageOfOrderValue",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Order value × 5%",
+            "quantity": 80,
+            "rate": 0.05,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "client:percentage-points"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PercentageOfOrderValue",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-PerCubicMeter",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PerCubicMeter",
+          "perSkuPick": 1,
+          "percentagePickingCost": 5,
+          "cubicPickingCost": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Volume · A",
+            "quantity": 3,
+            "rate": 2,
+            "amount": 6,
+            "raw": "6000000000",
+            "source": "client"
+          },
+          {
+            "description": "Volume · B",
+            "quantity": 0.5,
+            "rate": 2,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 7,
+        "calculation": "PerCubicMeter",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-default",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-no-additional",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "noAdditionalPick": true
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "noAdditionalPick": true
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 2,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-included-carry",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 4
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 1,
+            "rate": 0.5,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 2.5,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-included-zero-default",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 0
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-order-value-zero",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "PercentageOfOrderValue",
+          "percentagePickingCost": 5
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ],
+          "orderValue": 0
+        }
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "calculation": "PercentageOfOrderValue",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-saved-fulfillment",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ],
+          "fulfillmentLines": [
+            {
+              "product": "a",
+              "quantity": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 2,
+        "calculation": "PerItem",
+        "quantity": 1,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-empty-fulfillment",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ],
+          "fulfillmentLines": []
+        }
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "calculation": "PerItem",
+        "quantity": 0,
+        "skuCount": 0
+      }
+    },
+    {
+      "id": "picking-missing-product",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "error": "Picking product not found"
+    },
+    {
+      "id": "picking-unsupported",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "pickingCalculationType": "Unknown"
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "error": "Unsupported picking calculation Unknown"
+    },
+    {
+      "id": "picking-override-product",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 9,
+            "amount": 9,
+            "raw": "9000000000",
+            "source": "product:a"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 1,
+            "rate": 8,
+            "amount": 8,
+            "raw": "8000000000",
+            "source": "product:a"
+          }
+        ],
+        "amount": 17,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-override-all",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "id": "all",
+            "client": "c",
+            "warehouse": "w",
+            "firstPick": 3,
+            "additionalPick": 1
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "warehouse:all"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "warehouse:all"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-override-zero",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "id": "all",
+            "client": "c",
+            "warehouse": "w",
+            "firstPick": 3,
+            "additionalPick": 1
+          },
+          {
+            "id": "specific",
+            "client": "c",
+            "warehouse": "w",
+            "product": "a",
+            "firstPick": 0,
+            "additionalPick": 0
+          }
+        ]
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-override-disabled",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "id": "all",
+            "client": "c",
+            "warehouse": "w",
+            "firstPick": 3,
+            "additionalPick": 1
+          },
+          {
+            "id": "specific",
+            "client": "c",
+            "warehouse": "w",
+            "product": "a",
+            "firstPick": 0,
+            "additionalPick": 0,
+            "active": false
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "warehouse:all"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "warehouse:all"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-override-disabled-n",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "id": "all",
+            "client": "c",
+            "warehouse": "w",
+            "firstPick": 3,
+            "additionalPick": 1
+          },
+          {
+            "id": "specific",
+            "client": "c",
+            "warehouse": "w",
+            "product": "a",
+            "firstPick": 0,
+            "additionalPick": 0,
+            "active": "N"
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "warehouse:all"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "warehouse:all"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-override-partial",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "id": "all",
+            "client": "c",
+            "warehouse": "w",
+            "firstPick": 3,
+            "additionalPick": 1
+          },
+          {
+            "id": "specific",
+            "client": "c",
+            "warehouse": "w",
+            "product": "a",
+            "firstPick": "",
+            "additionalPick": 0
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "warehouse:all"
+          }
+        ],
+        "amount": 3,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-override-other-warehouse",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 9,
+            "additionalPick": 8
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 2
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "id": "specific",
+            "client": "c",
+            "warehouse": "other",
+            "product": "a",
+            "firstPick": 0,
+            "additionalPick": 0
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 9,
+            "amount": 9,
+            "raw": "9000000000",
+            "source": "product:a"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 1,
+            "rate": 8,
+            "amount": 8,
+            "raw": "8000000000",
+            "source": "product:a"
+          }
+        ],
+        "amount": 17,
+        "calculation": "PerItem",
+        "quantity": 2,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-highest-first",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "firstPick": 2,
+            "additionalPick": 0.5
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "firstPick": 7,
+            "additionalPick": 1
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · B",
+            "quantity": 1,
+            "rate": 7,
+            "amount": 7,
+            "raw": "7000000000",
+            "source": "product:b"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "product:b"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 3,
+            "rate": 0.5,
+            "amount": 1.5,
+            "raw": "1500000000",
+            "source": "product:a"
+          }
+        ],
+        "amount": 9.5,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-carton-remainder",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "cartonPicking": true,
+          "firstCarton": 3,
+          "additionalCarton": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "unitsPerCarton": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 11
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstCarton · A",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 5,
+        "calculation": "PerItem",
+        "quantity": 11,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-pallet-carton-item",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "palletPicking": true,
+          "cartonPicking": true,
+          "firstPallet": 10,
+          "additionalPallet": 4,
+          "firstCarton": 3,
+          "additionalCarton": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "unitsPerPallet": 100,
+            "unitsPerCarton": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 231
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPallet · A",
+            "quantity": 1,
+            "rate": 10,
+            "amount": 10,
+            "raw": "10000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPallet · A",
+            "quantity": 1,
+            "rate": 4,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "firstCarton · A",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalCarton · A",
+            "quantity": 2,
+            "rate": 1,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 21,
+        "calculation": "PerItem",
+        "quantity": 231,
+        "skuCount": 1
+      }
+    },
+    {
+      "id": "picking-channel-units",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        },
+        "channelTiers": [
+          {
+            "id": "channel",
+            "client": "c",
+            "channel": "Shopify",
+            "basis": "Units",
+            "tiers": [
+              {
+                "from": 1,
+                "rate": 0.05
+              },
+              {
+                "from": 101,
+                "rate": 0.1
+              }
+            ],
+            "splitTiers": true,
+            "minimumCharge": 2
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Tier 1–100",
+            "quantity": 5,
+            "rate": 0.05,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "tier"
+          },
+          {
+            "description": "Minimum charge adjustment",
+            "quantity": 1,
+            "rate": 1.75,
+            "amount": 1.75,
+            "raw": "1750000000",
+            "source": "minimum"
+          }
+        ],
+        "amount": 2,
+        "calculation": "ChannelTier",
+        "rule": "channel"
+      }
+    },
+    {
+      "id": "picking-channel-order-not-unit",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        },
+        "channelTiers": [
+          {
+            "id": "channel",
+            "client": "c",
+            "channel": "Shopify",
+            "basis": "Orders",
+            "tiers": [
+              {
+                "from": 1,
+                "rate": 0.05
+              },
+              {
+                "from": 101,
+                "rate": 0.1
+              }
+            ],
+            "splitTiers": true,
+            "minimumCharge": 2
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "picking-channel-disabled",
+      "method": "pickingQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        },
+        "channelTiers": [
+          {
+            "id": "channel",
+            "client": "c",
+            "channel": "Shopify",
+            "basis": "Units",
+            "tiers": [
+              {
+                "from": 1,
+                "rate": 0.05
+              },
+              {
+                "from": 101,
+                "rate": 0.1
+              }
+            ],
+            "splitTiers": true,
+            "minimumCharge": 2,
+            "active": false
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          }
+        ],
+        "amount": 4,
+        "calculation": "PerItem",
+        "quantity": 5,
+        "skuCount": 2
+      }
+    },
+    {
+      "id": "order-packaging-Highest",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "packagingAggregation": "Highest",
+          "packagingFee": 1,
+          "orderAdminFee": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "packagingFee": 3
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "packagingFee": 2
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "Product packaging (Highest)",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "product"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 9,
+        "calculation": "PerItem"
+      }
+    },
+    {
+      "id": "order-packaging-Sum",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "packagingAggregation": "Sum",
+          "packagingFee": 1,
+          "orderAdminFee": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "packagingFee": 3
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "packagingFee": 2
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "Product packaging (Sum)",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "product"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 11,
+        "calculation": "PerItem"
+      }
+    },
+    {
+      "id": "order-default-packaging",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "packagingFee": 1,
+          "orderAdminFee": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "Default packaging",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 7,
+        "calculation": "PerItem"
+      }
+    },
+    {
+      "id": "order-rework",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "packagingFee": 1,
+          "orderAdminFee": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "packagingFee": 3
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "packagingFee": 2
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ],
+          "reworkAmount": 4
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "Rework",
+            "quantity": 1,
+            "rate": 4,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "order"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 10,
+        "calculation": "PerItem"
+      }
+    },
+    {
+      "id": "order-rework-components",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "packagingFee": 1,
+          "orderAdminFee": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "packagingFee": 3
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "packagingFee": 2
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        },
+        "reworkComponents": [
+          {
+            "description": "Synthetic material",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "synthetic",
+            "evidenceId": "synthetic-proof"
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · A",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "additionalPick · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client:c"
+          },
+          {
+            "description": "Synthetic material",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "synthetic",
+            "evidenceId": "synthetic-proof"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 7,
+        "calculation": "PerItem"
+      }
+    },
+    {
+      "id": "order-extras-only",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "packagingFee": 1,
+          "orderAdminFee": 2
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ]
+        },
+        "excludePicking": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Default packaging",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "client"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 3,
+        "calculation": "Order extras"
+      }
+    },
+    {
+      "id": "order-split",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ],
+          "splitParent": "parent"
+        }
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "calculation": "Included in original order",
+        "billingParent": "parent"
+      }
+    },
+    {
+      "id": "order-excluded",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 3
+            },
+            {
+              "product": "b",
+              "quantity": 2
+            }
+          ],
+          "billingExcluded": true
+        }
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "calculation": "Included in original order",
+        "billingParent": null
+      }
+    },
+    {
+      "id": "order-round-after-sum",
+      "method": "orderQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 0.005,
+          "additionalPick": 0,
+          "includedItems": 1,
+          "packagingFee": 0.005,
+          "orderAdminFee": 0.005
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "order": {
+          "client": "c",
+          "warehouse": "w",
+          "channel": "Shopify",
+          "lines": [
+            {
+              "product": "a",
+              "quantity": 1
+            }
+          ]
+        }
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "firstPick · A",
+            "quantity": 1,
+            "rate": 0.005,
+            "amount": 0,
+            "raw": "5000000",
+            "source": "client:c"
+          },
+          {
+            "description": "Default packaging",
+            "quantity": 1,
+            "rate": 0.005,
+            "amount": 0,
+            "raw": "5000000",
+            "source": "client"
+          },
+          {
+            "description": "Order administration",
+            "quantity": 1,
+            "rate": 0.005,
+            "amount": 0,
+            "raw": "5000000",
+            "source": "client"
+          }
+        ],
+        "amount": 0.02,
+        "calculation": "PerItem"
+      }
+    },
+    {
+      "id": "goods-partial",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 2,
+          "hours": 1.5
+        },
+        "received": [
+          {
+            "product": "a",
+            "quantity": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in units · A",
+            "quantity": 5,
+            "rate": 0.1,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · A",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "asn:sku"
+          }
+        ],
+        "amount": 2.5,
+        "billedSkus": [
+          "a"
+        ],
+        "fixedChargesBilled": false
+      }
+    },
+    {
+      "id": "goods-final-no-duplicate-sku",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 2,
+          "hours": 1.5,
+          "billedSkus": [
+            "a"
+          ]
+        },
+        "received": [
+          {
+            "product": "a",
+            "quantity": 5
+          }
+        ],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in units · A",
+            "quantity": 5,
+            "rate": 0.1,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in FCL Container 40",
+            "quantity": 2,
+            "rate": 30,
+            "amount": 60,
+            "raw": "60000000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          },
+          {
+            "description": "ASN labour hours",
+            "quantity": 1.5,
+            "rate": 10,
+            "amount": 15,
+            "raw": "15000000000",
+            "source": "asn:hours"
+          }
+        ],
+        "amount": 80.5,
+        "billedSkus": [
+          "a"
+        ],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-fixed-already-billed",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 2,
+          "hours": 1.5,
+          "billedSkus": [
+            "a"
+          ],
+          "fixedChargesBilled": true
+        },
+        "received": [
+          {
+            "product": "a",
+            "quantity": 5
+          }
+        ],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in units · A",
+            "quantity": 5,
+            "rate": 0.1,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "asn:unit"
+          }
+        ],
+        "amount": 0.5,
+        "billedSkus": [
+          "a"
+        ],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-zero-overrides",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "goodsInRate": 0,
+            "goodsInSku": 0
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 2,
+          "hours": 1.5
+        },
+        "received": [
+          {
+            "product": "a",
+            "quantity": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "billedSkus": [
+          "a"
+        ],
+        "fixedChargesBilled": false
+      }
+    },
+    {
+      "id": "goods-excluded-product",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "noGoodsIn": true
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 2,
+          "hours": 1.5
+        },
+        "received": [
+          {
+            "product": "a",
+            "quantity": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [],
+        "amount": 0,
+        "billedSkus": [],
+        "fixedChargesBilled": false
+      }
+    },
+    {
+      "id": "goods-missing-product",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 2,
+          "hours": 1.5
+        },
+        "received": [
+          {
+            "product": "a",
+            "quantity": 5
+          }
+        ]
+      },
+      "error": "Receiving product not found"
+    },
+    {
+      "id": "goods-delivery-FCL Container 20",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 20",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in FCL Container 20",
+            "quantity": 1,
+            "rate": 20,
+            "amount": 20,
+            "raw": "20000000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 25,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-FCL Container 40",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in FCL Container 40",
+            "quantity": 1,
+            "rate": 30,
+            "amount": 30,
+            "raw": "30000000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 35,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-FCL Container 40 HC",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 40 HC",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in FCL Container 40 HC",
+            "quantity": 1,
+            "rate": 31,
+            "amount": 31,
+            "raw": "31000000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 36,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-FCL Container 45",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 45",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in FCL Container 45",
+            "quantity": 1,
+            "rate": 40,
+            "amount": 40,
+            "raw": "40000000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 45,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-FCL Container 45 HC",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "FCL Container 45 HC",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in FCL Container 45 HC",
+            "quantity": 1,
+            "rate": 41,
+            "amount": 41,
+            "raw": "41000000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 46,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-LCL Pallet",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "LCL Pallet",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in LCL Pallet",
+            "quantity": 1,
+            "rate": 1.5,
+            "amount": 1.5,
+            "raw": "1500000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 6.5,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-LCL Boxes",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "LCL Boxes",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in LCL Boxes",
+            "quantity": 1,
+            "rate": 0.5,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "asn:delivery"
+          },
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 5.5,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-delivery-Unknown",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInSku": 2,
+          "goodsInRate": 0.1,
+          "goodsIn20": 20,
+          "goodsIn40": 30,
+          "goodsIn40HC": 31,
+          "goodsIn45": 40,
+          "goodsIn45HC": 41,
+          "goodsInPallet": 1.5,
+          "goodsInCarton": 0.5,
+          "asnAdmin": 5,
+          "asnHour": 10
+        },
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "asn": {
+          "deliveryType": "Unknown",
+          "deliveryQuantity": 0
+        },
+        "received": [],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "ASN administration",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "asn:admin"
+          }
+        ],
+        "amount": 5,
+        "billedSkus": [],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "goods-official-example",
+      "method": "goodsInQuote",
+      "input": {
+        "client": {
+          "goodsInPallet": 1.5,
+          "goodsInSku": 0.25,
+          "goodsInRate": 0.1
+        },
+        "asn": {
+          "deliveryType": "LCL Pallet"
+        },
+        "products": [
+          {
+            "id": "0",
+            "sku": "0"
+          },
+          {
+            "id": "1",
+            "sku": "1"
+          },
+          {
+            "id": "2",
+            "sku": "2"
+          },
+          {
+            "id": "3",
+            "sku": "3"
+          },
+          {
+            "id": "4",
+            "sku": "4"
+          },
+          {
+            "id": "5",
+            "sku": "5"
+          },
+          {
+            "id": "6",
+            "sku": "6"
+          },
+          {
+            "id": "7",
+            "sku": "7"
+          },
+          {
+            "id": "8",
+            "sku": "8"
+          },
+          {
+            "id": "9",
+            "sku": "9"
+          },
+          {
+            "id": "10",
+            "sku": "10"
+          },
+          {
+            "id": "11",
+            "sku": "11"
+          },
+          {
+            "id": "12",
+            "sku": "12"
+          },
+          {
+            "id": "13",
+            "sku": "13"
+          },
+          {
+            "id": "14",
+            "sku": "14"
+          },
+          {
+            "id": "15",
+            "sku": "15"
+          },
+          {
+            "id": "16",
+            "sku": "16"
+          },
+          {
+            "id": "17",
+            "sku": "17"
+          },
+          {
+            "id": "18",
+            "sku": "18"
+          },
+          {
+            "id": "19",
+            "sku": "19"
+          },
+          {
+            "id": "20",
+            "sku": "20"
+          },
+          {
+            "id": "21",
+            "sku": "21"
+          },
+          {
+            "id": "22",
+            "sku": "22"
+          },
+          {
+            "id": "23",
+            "sku": "23"
+          },
+          {
+            "id": "24",
+            "sku": "24"
+          },
+          {
+            "id": "25",
+            "sku": "25"
+          },
+          {
+            "id": "26",
+            "sku": "26"
+          },
+          {
+            "id": "27",
+            "sku": "27"
+          },
+          {
+            "id": "28",
+            "sku": "28"
+          },
+          {
+            "id": "29",
+            "sku": "29"
+          },
+          {
+            "id": "30",
+            "sku": "30"
+          },
+          {
+            "id": "31",
+            "sku": "31"
+          },
+          {
+            "id": "32",
+            "sku": "32"
+          },
+          {
+            "id": "33",
+            "sku": "33"
+          },
+          {
+            "id": "34",
+            "sku": "34"
+          },
+          {
+            "id": "35",
+            "sku": "35"
+          },
+          {
+            "id": "36",
+            "sku": "36"
+          },
+          {
+            "id": "37",
+            "sku": "37"
+          },
+          {
+            "id": "38",
+            "sku": "38"
+          },
+          {
+            "id": "39",
+            "sku": "39"
+          },
+          {
+            "id": "40",
+            "sku": "40"
+          },
+          {
+            "id": "41",
+            "sku": "41"
+          },
+          {
+            "id": "42",
+            "sku": "42"
+          },
+          {
+            "id": "43",
+            "sku": "43"
+          },
+          {
+            "id": "44",
+            "sku": "44"
+          },
+          {
+            "id": "45",
+            "sku": "45"
+          },
+          {
+            "id": "46",
+            "sku": "46"
+          },
+          {
+            "id": "47",
+            "sku": "47"
+          },
+          {
+            "id": "48",
+            "sku": "48"
+          },
+          {
+            "id": "49",
+            "sku": "49"
+          }
+        ],
+        "received": [
+          {
+            "product": "0",
+            "quantity": 10
+          },
+          {
+            "product": "1",
+            "quantity": 10
+          },
+          {
+            "product": "2",
+            "quantity": 10
+          },
+          {
+            "product": "3",
+            "quantity": 10
+          },
+          {
+            "product": "4",
+            "quantity": 10
+          },
+          {
+            "product": "5",
+            "quantity": 10
+          },
+          {
+            "product": "6",
+            "quantity": 10
+          },
+          {
+            "product": "7",
+            "quantity": 10
+          },
+          {
+            "product": "8",
+            "quantity": 10
+          },
+          {
+            "product": "9",
+            "quantity": 10
+          },
+          {
+            "product": "10",
+            "quantity": 10
+          },
+          {
+            "product": "11",
+            "quantity": 10
+          },
+          {
+            "product": "12",
+            "quantity": 10
+          },
+          {
+            "product": "13",
+            "quantity": 10
+          },
+          {
+            "product": "14",
+            "quantity": 10
+          },
+          {
+            "product": "15",
+            "quantity": 10
+          },
+          {
+            "product": "16",
+            "quantity": 10
+          },
+          {
+            "product": "17",
+            "quantity": 10
+          },
+          {
+            "product": "18",
+            "quantity": 10
+          },
+          {
+            "product": "19",
+            "quantity": 10
+          },
+          {
+            "product": "20",
+            "quantity": 10
+          },
+          {
+            "product": "21",
+            "quantity": 10
+          },
+          {
+            "product": "22",
+            "quantity": 10
+          },
+          {
+            "product": "23",
+            "quantity": 10
+          },
+          {
+            "product": "24",
+            "quantity": 10
+          },
+          {
+            "product": "25",
+            "quantity": 10
+          },
+          {
+            "product": "26",
+            "quantity": 10
+          },
+          {
+            "product": "27",
+            "quantity": 10
+          },
+          {
+            "product": "28",
+            "quantity": 10
+          },
+          {
+            "product": "29",
+            "quantity": 10
+          },
+          {
+            "product": "30",
+            "quantity": 10
+          },
+          {
+            "product": "31",
+            "quantity": 10
+          },
+          {
+            "product": "32",
+            "quantity": 10
+          },
+          {
+            "product": "33",
+            "quantity": 10
+          },
+          {
+            "product": "34",
+            "quantity": 10
+          },
+          {
+            "product": "35",
+            "quantity": 10
+          },
+          {
+            "product": "36",
+            "quantity": 10
+          },
+          {
+            "product": "37",
+            "quantity": 10
+          },
+          {
+            "product": "38",
+            "quantity": 10
+          },
+          {
+            "product": "39",
+            "quantity": 10
+          },
+          {
+            "product": "40",
+            "quantity": 10
+          },
+          {
+            "product": "41",
+            "quantity": 10
+          },
+          {
+            "product": "42",
+            "quantity": 10
+          },
+          {
+            "product": "43",
+            "quantity": 10
+          },
+          {
+            "product": "44",
+            "quantity": 10
+          },
+          {
+            "product": "45",
+            "quantity": 10
+          },
+          {
+            "product": "46",
+            "quantity": 10
+          },
+          {
+            "product": "47",
+            "quantity": 10
+          },
+          {
+            "product": "48",
+            "quantity": 10
+          },
+          {
+            "product": "49",
+            "quantity": 10
+          }
+        ],
+        "complete": true
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Goods in units · 0",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 0",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 1",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 1",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 2",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 2",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 3",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 3",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 4",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 4",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 5",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 5",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 6",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 6",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 7",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 7",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 8",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 8",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 9",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 9",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 10",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 10",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 11",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 11",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 12",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 12",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 13",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 13",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 14",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 14",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 15",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 15",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 16",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 16",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 17",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 17",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 18",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 18",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 19",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 19",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 20",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 20",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 21",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 21",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 22",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 22",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 23",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 23",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 24",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 24",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 25",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 25",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 26",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 26",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 27",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 27",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 28",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 28",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 29",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 29",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 30",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 30",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 31",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 31",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 32",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 32",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 33",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 33",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 34",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 34",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 35",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 35",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 36",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 36",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 37",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 37",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 38",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 38",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 39",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 39",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 40",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 40",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 41",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 41",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 42",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 42",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 43",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 43",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 44",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 44",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 45",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 45",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 46",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 46",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 47",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 47",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 48",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 48",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in units · 49",
+            "quantity": 10,
+            "rate": 0.1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "asn:unit"
+          },
+          {
+            "description": "Goods in SKU · 49",
+            "quantity": 1,
+            "rate": 0.25,
+            "amount": 0.25,
+            "raw": "250000000",
+            "source": "asn:sku"
+          },
+          {
+            "description": "Goods in LCL Pallet",
+            "quantity": 1,
+            "rate": 1.5,
+            "amount": 1.5,
+            "raw": "1500000000",
+            "source": "asn:delivery"
+          }
+        ],
+        "amount": 64,
+        "billedSkus": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49"
+        ],
+        "fixedChargesBilled": true
+      }
+    },
+    {
+      "id": "storage-shared-and-scope",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "LocationTypeUsage"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Storage locations · Pick",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "location-price:p"
+          }
+        ],
+        "amount": 2,
+        "type": "LocationTypeUsage",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-specific-price",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "LocationTypeUsage"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          },
+          {
+            "id": "client",
+            "client": "c",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 1
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Storage locations · Pick",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "location-price:client"
+          }
+        ],
+        "amount": 1,
+        "type": "LocationTypeUsage",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-disabled-price",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "LocationTypeUsage"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          },
+          {
+            "id": "client",
+            "client": "c",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 1,
+            "active": "N"
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Storage locations · Pick",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "location-price:p"
+          }
+        ],
+        "amount": 2,
+        "type": "LocationTypeUsage",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-price-missing",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "LocationTypeUsage"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": []
+      },
+      "error": "Missing Daily storage price for location type Pick"
+    },
+    {
+      "id": "storage-highest-no-history",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "HighestPointLocationTypeUsage"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "error": "Historical storage snapshots are required; current stock cannot represent a historical peak"
+    },
+    {
+      "id": "storage-highest-per-type",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "HighestPointLocationTypeUsage"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ],
+        "history": [
+          {
+            "stock": [
+              {
+                "product": "a",
+                "location": "l1",
+                "onhand": 5
+              },
+              {
+                "product": "b",
+                "location": "l1",
+                "onhand": 2
+              },
+              {
+                "product": "a",
+                "location": "none",
+                "onhand": 1
+              },
+              {
+                "product": "alien",
+                "location": "l2",
+                "onhand": 10
+              },
+              {
+                "product": "a",
+                "location": "l2",
+                "onhand": 0
+              }
+            ]
+          },
+          {
+            "stock": [
+              {
+                "product": "a",
+                "location": "l2",
+                "onhand": 3
+              }
+            ]
+          }
+        ],
+        "from": "2026-01-01",
+        "to": "2026-01-31"
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Storage locations · Pick",
+            "quantity": 1,
+            "rate": 2,
+            "amount": 2,
+            "raw": "2000000000",
+            "source": "location-price:p"
+          },
+          {
+            "description": "Storage locations · Bulk",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "location-price:b"
+          }
+        ],
+        "amount": 7,
+        "type": "HighestPointLocationTypeUsage",
+        "frequency": "Daily",
+        "from": "2026-01-01",
+        "to": "2026-01-31"
+      }
+    },
+    {
+      "id": "storage-Volumetric",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "Volumetric",
+          "storageRate": 2,
+          "unitStorageFee": 0.5,
+          "stockManagementFee": 3
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Volumetric · A",
+            "quantity": 6,
+            "rate": 2,
+            "amount": 12,
+            "raw": "12000000000",
+            "source": "storage:Volumetric"
+          },
+          {
+            "description": "Volumetric · B",
+            "quantity": 0.5,
+            "rate": 2,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "storage:Volumetric"
+          }
+        ],
+        "amount": 13,
+        "type": "Volumetric",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-StorageUnits",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "StorageUnits",
+          "storageRate": 2,
+          "unitStorageFee": 0.5,
+          "stockManagementFee": 3
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "StorageUnits · A",
+            "quantity": 6,
+            "rate": 0.5,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "storage:StorageUnits"
+          },
+          {
+            "description": "StorageUnits · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "storage:StorageUnits"
+          }
+        ],
+        "amount": 4,
+        "type": "StorageUnits",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-StockManagementFee",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "StockManagementFee",
+          "storageRate": 2,
+          "unitStorageFee": 0.5,
+          "stockManagementFee": 3
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Stock management fee",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 3,
+        "type": "StockManagementFee",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-unit-zero-falls-back",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "StorageUnits",
+          "unitStorageFee": 0.5
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "unitStoragePrice": 0
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10,
+            "unitStoragePrice": 0
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "StorageUnits · A",
+            "quantity": 6,
+            "rate": 0.5,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "storage:StorageUnits"
+          },
+          {
+            "description": "StorageUnits · B",
+            "quantity": 2,
+            "rate": 0.5,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "storage:StorageUnits"
+          }
+        ],
+        "amount": 4,
+        "type": "StorageUnits",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-empty-fixed",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "StockManagementFee",
+          "stockManagementFee": 3
+        },
+        "stock": [],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Stock management fee",
+            "quantity": 1,
+            "rate": 3,
+            "amount": 3,
+            "raw": "3000000000",
+            "source": "client"
+          }
+        ],
+        "amount": 3,
+        "type": "StockManagementFee",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-carton-ceiling",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "VolumetricCarton",
+          "storageRate": 2
+        },
+        "stock": [
+          {
+            "product": "a",
+            "onhand": 11
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "unitsPerCarton": 10,
+            "cartonHeight": 100,
+            "cartonLength": 100,
+            "cartonDepth": 100
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "VolumetricCarton · A",
+            "quantity": 2,
+            "rate": 2,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "storage:VolumetricCarton"
+          }
+        ],
+        "amount": 4,
+        "type": "VolumetricCarton",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-carton-missing",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "VolumetricCarton",
+          "storageRate": 2
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "error": "Carton size is required for A"
+    },
+    {
+      "id": "storage-pallet-greedy",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "PerPalletUnit",
+          "unitStorageFee": 2
+        },
+        "stock": [
+          {
+            "product": "a",
+            "onhand": 131
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "palletSizes": "10;100 20"
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "PerPalletUnit · A",
+            "quantity": 4,
+            "rate": 2,
+            "amount": 8,
+            "raw": "8000000000",
+            "source": "storage:PerPalletUnit"
+          }
+        ],
+        "amount": 8,
+        "type": "PerPalletUnit",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-pallet-single",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "PerPalletUnit",
+          "unitStorageFee": 2
+        },
+        "stock": [
+          {
+            "product": "a",
+            "onhand": 101
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20,
+            "unitsPerPallet": 100
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "PerPalletUnit · A",
+            "quantity": 2,
+            "rate": 2,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "storage:PerPalletUnit"
+          }
+        ],
+        "amount": 4,
+        "type": "PerPalletUnit",
+        "frequency": "Daily"
+      }
+    },
+    {
+      "id": "storage-pallet-missing",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "PerPalletUnit",
+          "unitStorageFee": 2
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "error": "Pallet size is required for A"
+    },
+    {
+      "id": "storage-unsupported",
+      "method": "storageQuote",
+      "input": {
+        "client": {
+          "id": "c",
+          "firstPick": 2,
+          "additionalPick": 0.5,
+          "includedItems": 1,
+          "storageType": "Unknown"
+        },
+        "stock": [
+          {
+            "product": "a",
+            "location": "l1",
+            "onhand": 5
+          },
+          {
+            "product": "b",
+            "location": "l1",
+            "onhand": 2
+          },
+          {
+            "product": "a",
+            "location": "none",
+            "onhand": 1
+          },
+          {
+            "product": "alien",
+            "location": "l2",
+            "onhand": 10
+          },
+          {
+            "product": "a",
+            "location": "l2",
+            "onhand": 0
+          }
+        ],
+        "products": [
+          {
+            "id": "a",
+            "client": "c",
+            "sku": "A",
+            "height": 100,
+            "length": 100,
+            "depth": 100,
+            "price": 20
+          },
+          {
+            "id": "b",
+            "client": "c",
+            "sku": "B",
+            "volume": 0.25,
+            "price": 10
+          }
+        ],
+        "locations": [
+          {
+            "id": "l1",
+            "type": "Pick"
+          },
+          {
+            "id": "l2",
+            "type": "Bulk"
+          },
+          {
+            "id": "none",
+            "name": "Unassigned",
+            "type": "Bulk"
+          }
+        ],
+        "locationPrices": [
+          {
+            "id": "p",
+            "locationType": "Pick",
+            "frequency": "Daily",
+            "cost": 2
+          },
+          {
+            "id": "b",
+            "locationType": "Bulk",
+            "frequency": "Daily",
+            "cost": 5
+          }
+        ]
+      },
+      "error": "Unsupported storage type Unknown"
+    },
+    {
+      "id": "courier-normal",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "rule",
+          "parcelCost": 3,
+          "additionalParcelCost": 1,
+          "includedWeight": 2,
+          "perKgRate": 0.5,
+          "fuelPercent": 10
+        },
+        "weight": 4,
+        "parcels": 2
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Courier charge",
+            "quantity": 1,
+            "rate": 5,
+            "amount": 5,
+            "raw": "5000000000",
+            "source": "courier-price:rule"
+          },
+          {
+            "description": "Fuel surcharge 10%",
+            "quantity": 1,
+            "rate": 0.5,
+            "amount": 0.5,
+            "raw": "500000000",
+            "source": "courier-price:rule"
+          }
+        ],
+        "amount": 5.5
+      }
+    },
+    {
+      "id": "courier-per-kg",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "rule",
+          "parcelCost": 3,
+          "additionalParcelCost": 1,
+          "includedWeight": 2,
+          "perKgRate": 0.5,
+          "fuelPercent": 10,
+          "useAdditionalAsPerKgRate": true
+        },
+        "weight": 4,
+        "parcels": 2
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Courier charge",
+            "quantity": 1,
+            "rate": 10,
+            "amount": 10,
+            "raw": "10000000000",
+            "source": "courier-price:rule"
+          },
+          {
+            "description": "Fuel surcharge 10%",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "courier-price:rule"
+          }
+        ],
+        "amount": 11
+      }
+    },
+    {
+      "id": "courier-default-parcels",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "rule",
+          "parcelCost": 3,
+          "additionalParcelCost": 1,
+          "includedWeight": 2,
+          "perKgRate": 0.5,
+          "fuelPercent": 10
+        },
+        "weight": 4
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Courier charge",
+            "quantity": 1,
+            "rate": 4,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "courier-price:rule"
+          },
+          {
+            "description": "Fuel surcharge 10%",
+            "quantity": 1,
+            "rate": 0.4,
+            "amount": 0.4,
+            "raw": "400000000",
+            "source": "courier-price:rule"
+          }
+        ],
+        "amount": 4.4
+      }
+    },
+    {
+      "id": "courier-zero-parcels",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "rule",
+          "parcelCost": 3,
+          "additionalParcelCost": 1,
+          "includedWeight": 2,
+          "perKgRate": 0.5,
+          "fuelPercent": 10
+        },
+        "weight": 4,
+        "parcels": 0
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Courier charge",
+            "quantity": 1,
+            "rate": 4,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "courier-price:rule"
+          },
+          {
+            "description": "Fuel surcharge 10%",
+            "quantity": 1,
+            "rate": 0.4,
+            "amount": 0.4,
+            "raw": "400000000",
+            "source": "courier-price:rule"
+          }
+        ],
+        "amount": 4.4
+      }
+    },
+    {
+      "id": "courier-below-included",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "rule",
+          "parcelCost": 3,
+          "additionalParcelCost": 1,
+          "includedWeight": 2,
+          "perKgRate": 0.5,
+          "fuelPercent": 10
+        },
+        "weight": 1,
+        "parcels": 2
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Courier charge",
+            "quantity": 1,
+            "rate": 4,
+            "amount": 4,
+            "raw": "4000000000",
+            "source": "courier-price:rule"
+          },
+          {
+            "description": "Fuel surcharge 10%",
+            "quantity": 1,
+            "rate": 0.4,
+            "amount": 0.4,
+            "raw": "400000000",
+            "source": "courier-price:rule"
+          }
+        ],
+        "amount": 4.4
+      }
+    },
+    {
+      "id": "courier-inclusive-boundary",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "boundary",
+          "parcelCost": 1,
+          "minWeight": 0.3,
+          "maxWeight": 0.3
+        },
+        "weight": 0.3
+      },
+      "expected": {
+        "lines": [
+          {
+            "description": "Courier charge",
+            "quantity": 1,
+            "rate": 1,
+            "amount": 1,
+            "raw": "1000000000",
+            "source": "courier-price:boundary"
+          }
+        ],
+        "amount": 1
+      }
+    },
+    {
+      "id": "courier-outside-range",
+      "method": "courierQuote",
+      "input": {
+        "rule": {
+          "id": "boundary",
+          "parcelCost": 1,
+          "minWeight": 0,
+          "maxWeight": 0.3
+        },
+        "weight": 0.3001
+      },
+      "error": "Shipment weight is outside the courier price range"
+    },
+    {
+      "id": "courier-missing",
+      "method": "courierQuote",
+      "input": {
+        "weight": 1
+      },
+      "error": "No courier price matches this shipment"
+    }
+  ]
+}
