@@ -1,5 +1,7 @@
 # cangchu-backend · 海外仓储 Java 后端
 
+接手项目先读 [统一交接文件](https://github.com/jiangyi3265/cangchu-warehouse/blob/main/docs/HANDOFF.md)。本站已于 2026-11-16（America/New_York）切换为若依，使用用户确认的空白业务库；线上位置、已发布提交和备份见 [部署文档](https://github.com/jiangyi3265/cangchu-warehouse/blob/main/docs/DEPLOYMENT.md)。这不表示客户 Mintsoft 全部业务已完成替换。
+
 若依 Spring Boot 后端，为 cangchu-admin 管理后台提供系统权限与原生 Java 仓储 API。
 
 ## 项目简介
@@ -85,7 +87,7 @@ python tools/initialize-local.py --mysql-config /absolute/private/mysql-client.c
 java -jar ruoyi-admin/target/ruoyi-admin.jar
 ```
 
-通过前端使用 admin 和初始化密码登录。工具及应用不读取根目录 .env。当前迁移版尚未达到生产替换条件；默认 prod profile 的完整变量见 [BACKEND-CONTRACT.md](BACKEND-CONTRACT.md)，生产密钥没有默认值。
+通过前端使用 admin 和初始化密码登录。工具及应用不读取根目录 .env。本站若依版本已经部署，但客户 Mintsoft 业务完整接替条件仍未满足；默认 prod profile 的完整变量见 [BACKEND-CONTRACT.md](BACKEND-CONTRACT.md)，生产密钥没有默认值。
 
 ## 项目结构
 
